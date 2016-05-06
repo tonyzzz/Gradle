@@ -1,0 +1,17 @@
+task signFiles
+fileTree(new File(rootDir, 'dex')).exclude('abc.txt', '123.txt').include('*.java').each { file ->
+    task "SignValue$file" << {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine "/usr/bin/python"
+            def argv = []
+            argv << "${rootDir}/Script/signature.py"
+            argv << "$file"
+            args = argv
+            standardOutput = stdout
+            errorOutput = stdout
+        }
+        println stdout
+    }
+    signFiles.dependsOn "SignValue$file"
+}
